@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi Stream</title>
+    <style>
+        body {
+            margin: 10px;
+            background-color: #f0f0f0;
+            position: relative;
+        }
+
+        .videoPlayerContainer {
+            position: relative;
+            width: 100%;
+        }
+
+        .videoPlayer {
+            width: 100%;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 8px; /* Posisi teks dari atas */
+            left: 20px; /* Posisi teks dari kiri */
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            z-index: 1; /* Pastikan overlay muncul di atas video */
+            opacity: 1; /* Tampilkan overlay secara default */
+            transition: opacity 0.5s; /* Efek transisi untuk fading */
+        }
+
+        #titleContainer {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #title {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .video-not-available {
+            text-align: center;
+            font-size: 18px;
+            color: red;
+            margin-top: 20px;
+            display: none; /* Sembunyikan pesan secara default */
+        }
+
+        
+       /* Popup Style */
+.popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #808080; /* Warna latar belakang abu */
+    color: white;
+    padding-left: 10px;
+    border-radius: 5px;
+    display: flex; /* Menggunakan flex untuk penataan elemen */
+    align-items: center; /* Pusatkan secara vertikal */
+    justify-content: space-between; /* Atur spasi antara elemen */
+    z-index: 2;
+}
+
+.close-btn {
+    cursor: pointer;
+    font-size: 18px;
+    background-color: red; /* Warna latar belakang merah untuk tombol close */
+    padding: 5px 10px;
+    border-radius: 3px;
+    color: white;
+    margin-left: 10px; /* Tambahkan margin kiri untuk memisahkan tombol close dari teks popup */
+}
+
+  .popup332 {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #ffffff;
+            z-index: 999;
+        }
+
+        .popup-text332 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .popup-subtext332 {
+            font-size: 16px;
+        }
+
+
+    </style>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+ <!-- Full Popup -->
+    <div class="popup332" id="fullPagePopup">
+        <div class="popup-text332">
+            Tunggu sebentar...
+        </div>
+        <div class="popup-subtext332">
+            Member yang belum tersedia: 
+        </div>
+	<div class="popup-subtext332">
+           Adel, Callie, Chika, Christy, Feni, Flora, Gracia, Jessi, Kathrina, Marsha, Raisha
+        </div>
+    </div>
+
+    <!-- Your existing content goes here -->
+
+    <!-- JavaScript to close the popup after 3 seconds -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.getElementById('fullPagePopup').style.display = 'none';
+            }, 5000);
+        });
+    </script>
+   <!-- End Popup -->
+
+    <!-- Popup -->
+    <div class="popup" id="popup">
+ Jika ada yang live lagi atau error, refresh aja.
+        <span class="close-btn" onclick="closePopup()">×</span>
+       
+    </div>
+
+    <!-- Judul Container -->
+    <div id="titleContainer">
+        <div id="title">Multi Stream</div>
+    </div>
+
+    <!-- Video Players Container using Bootstrap Grid -->
+    <div class="container" id="videoPlayersContainer">
+        <div class="row">
+            <!-- Video Players will be dynamically added here -->
+        </div>
+    </div>
+
+    <!-- Video not available message -->
+    <div class="video-not-available" id="videoNotAvailableText">Gak ada yang live IDN</div>
+
+    <!-- Bootstrap JS (Optional) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- hls.js -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <script>
+        // Popup script
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.getElementById('popup').style.display = 'flex';
+            }, 2000); // Tampilkan popup setelah 3 detik (ganti dengan durasi yang diinginkan)
+        });
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        // Video script
+        // ... (script pemutar video tetap di sini)
+        // Array of M3U8 URLs
+        var m3u8URLs = [
+'XXX',  
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.sLZkhRvMutd4.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.08vLei7g32Nv.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.r1IZpJ0puDJi.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.n6b4LL65GHiq.m3u8',
+'xxxx',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.Q0uEvM6Dl951.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.o3XoGdLr8Ejd.m3u8?player_version=1.14.0',
+'xxxx',
+'xxxx',
+
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.UVu6FmzsZAuY.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.tk9WxdsYj8NE.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.1TQqlwWPwce5.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.809zi18MGuB1.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.OHdxDVm8kOqf.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.BDGTjOuDMTDH.m3u8',
+'xxxx',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.oDOImnzzGyk8.m3u8',
+'xxxx',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.eCTljQvrMYaf.m3u8',
+
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.pIypkyH1I3k7.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.k4fAFOYXENlG.m3u8',
+'xxxx',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.ztIO0UisaA3P.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.z3nXSqOvE9Fs.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.oKpAUHJSe6RM.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.O6aLPrWLhBTe.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.imgvnQDsdA1W.m3u8',
+'xxxx',
+'xxxx',
+
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.ZEhAbERTyvxy.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.LuflGrysVdSz.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.YMhzlmrLe7tw.m3u8',
+'xxxx',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.uE0Cu8MD1aMc.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.sm9AmQPkGDGS.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.QGp4Op9dfxOA.m3u8',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.KGbEli9xlInK.m3u8',
+'xxxx',
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.P7Sbhg6PTgcn.m3u8',
+
+'https://4b964ca68cf1.us-east-1.playback.live-video.net/api/video/v1/us-east-1.050891932989.channel.w5OhSjUumDJq.m3u8',
+'xxxx',
+            // Add more URLs as needed
+        ];
+
+        // Array of watermarks (one for each video)
+        var watermarks = [
+            'Adel',
+            'Alya',
+            'Amanda',
+'Anindya',
+'Ashel',
+
+'Callie',
+'Cathy',
+'Chelsea',
+'Chika',
+'Christy',
+
+'Cynthia',
+'Daisy',
+'Danella',
+'Eli',
+'Elin',
+
+'Ella',
+'Feni',
+'Fiony',
+'Flora',
+'Freya',
+
+'Gendis',
+'Gita',
+'Gracia',
+'Gracie',
+'Greesel',
+
+'Indah',
+'Indira',
+'Jeane',
+'Jessi',
+'Kathrina',
+
+'Lia',
+'Lulu',
+'Lyn',
+'Marsha',
+'Michie',
+
+'Muthe',
+'Olla',
+'Oniel',
+'Raisha',
+'Shani',
+
+'Zee',
+'JKT48',
+            // Add more watermarks as needed
+        ];
+
+        var videoNotAvailableText = document.getElementById('videoNotAvailableText');
+        var container = document.getElementById('videoPlayersContainer');
+
+        // Check if Hls.js is supported
+        var isHlsSupported = Hls.isSupported();
+
+        // Create video players dynamically
+        m3u8URLs.forEach(function (url, index) {
+            var videoContainer = document.createElement('div');
+            videoContainer.className = 'col-md-2 videoPlayerContainer';
+
+            var videoPlayer = document.createElement('video');
+            videoPlayer.className = 'videoPlayer';
+            videoPlayer.controls = true;
+
+            var overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            overlay.innerText = watermarks[index]; // Gunakan watermark yang sesuai dengan indeks video
+
+            videoContainer.appendChild(videoPlayer);
+            videoContainer.appendChild(overlay);
+            container.querySelector('.row').appendChild(videoContainer);
+
+            var hls = new Hls();
+
+            if (isHlsSupported) {
+                hls.loadSource(url);
+                hls.attachMedia(videoPlayer);
+            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                videoPlayer.src = url;
+            }
+
+            // Add an event listener for the 'error' event
+            videoPlayer.addEventListener('error', function () {
+                // Sembunyikan pemutar video ketika terjadi kesalahan (misalnya, video tidak dimulai atau tidak dapat dimainkan)
+                videoContainer.style.display = 'none';
+                checkVideoAvailability();
+            });
+
+            // Add an event listener for the 'waiting' event
+            videoPlayer.addEventListener('waiting', function () {
+                // Sembunyikan pemutar video ketika video menunggu untuk dimulai
+                videoContainer.style.display = 'none';
+                checkVideoAvailability();
+            });
+
+            // Add an event listener for the 'playing' event
+            videoPlayer.addEventListener('playing', function () {
+                // Video mulai dimainkan, tampilkan pemutar video
+                videoContainer.style.display = 'block';
+                checkVideoAvailability();
+            });
+
+            hls.on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            console.log('Network error');
+                            // Sembunyikan pemutar video ketika terjadi kesalahan jaringan
+                            videoContainer.style.display = 'none';
+                            checkVideoAvailability();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            console.log('Media error');
+                            // Sembunyikan pemutar video ketika terjadi kesalahan media
+                            videoContainer.style.display = 'none';
+                            checkVideoAvailability();
+                            break;
+                        default:
+                            console.log('Unknown error');
+                            break;
+                    }
+                    hls.startLoad();
+                }
+            });
+        });
+
+        function checkVideoAvailability() {
+            var visibleVideoPlayers = document.querySelectorAll('.videoPlayerContainer:not([style*="display: none"])');
+            if (visibleVideoPlayers.length === 0) {
+                videoNotAvailableText.style.display = 'block';
+            } else {
+                videoNotAvailableText.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
